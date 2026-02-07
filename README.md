@@ -1,36 +1,190 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Home Console
 
-## Getting Started
+Home Console is a self-hosted personal OS / second brain built to unify planning, tracking, and reflection in a single system.
 
-First, run the development server:
+It is an opinionated, long-lived project designed around:
+- local-first data ownership
+- clear domain boundaries
+- incremental feature growth
+- low operational overhead in a homelab environment
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+This is not a generic productivity app. It is intentionally personal and expected to evolve over time.
+
+---
+
+## Core Goals
+
+- Replace scattered tools (notes, todos, planners, finance trackers) with one cohesive system
+- Treat personal data as structured, queryable state rather than unstructured notes
+- Optimise for daily use and long-term continuity
+- Remain deployable and maintainable as a self-hosted service
+
+---
+
+## Architecture Overview
+
+Frontend: Next.js (App Router)
+Language: TypeScript
+Styling/UI: Tailwind CSS + shadcn/ui
+
+Backend approach:
+- Server Components and Server Actions by default
+- PostgreSQL as the primary datastore
+- Typed SQL via a query builder (no heavy ORM abstractions)
+
+Authentication: TODO
+Deployment: Docker (homelab-first)
+
+The application favours server-side logic and explicit data flows over client-heavy state.
+
+---
+
+## Key Modules
+
+### Thoughts
+
+Fast, low-friction capture for unstructured input.
+- Designed for speed
+- Minimal formatting
+- Can be processed or promoted later
+
+### Ideas
+
+Longer-lived concepts organised using a PARA-style structure:
+- Projects
+- Areas
+- Resources
+- Archives
+
+Ideas may evolve, link to other modules, or remain inactive.
+
+### Todos
+
+A planning-focused task system.
+- Weekly planning as the primary view
+- Status-based flow (planning → in progress → done)
+- Supports both daily execution and weekly review
+
+### Finance
+
+Personal finance visibility and tracking.
+- Multiple accounts (e.g. EUR / GBP)
+- Recurring expenses
+- Cash-flow-oriented views
+- Manual by design (no automatic bank syncing)
+
+### Other Modules
+
+Additional modules are expected to emerge over time (e.g. travel, health, inventory, logs).
+
+Each module should:
+- Own its database schema
+- Own its UI
+- Minimise cross-module coupling
+
+---
+
+## Data Model Philosophy
+
+- PostgreSQL is the single source of truth
+- Schemas are explicit and migration-driven
+- Each module maintains its own tables and query layer
+- Types flow from the database upward
+
+Avoid:
+- god tables
+- polymorphic blobs
+- implicit or hidden relations
+
+---
+
+## Project Structure
+
+app/
+&nbsp;&nbsp;Next.js App Router
+
+modules/
+&nbsp;&nbsp;Domain modules (thoughts, todos, finance, etc.)
+&nbsp;&nbsp;common/
+&nbsp;&nbsp;&nbsp;&nbsp;components/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ui/ - UI components (shadcn)
+
+lib/
+&nbsp;&nbsp;db/ – database config, migrations, queries
+&nbsp;&nbsp;date/ – date and time utilities
+
+Domains are organised by intent, not by technical layer.
+
+---
+
+## Local Development
+
+Install dependencies and run the dev server:
+
+pnpm install
 pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Required environment variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+DATABASE_URL=
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Database notes:
+- PostgreSQL
+- Migrations must be applied before running the app
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Home Console is designed to run as a long-lived service in a homelab.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Docker-based deployment
+- Reverse proxy handled externally (e.g. Nginx Proxy Manager)
+- Persistent data via mounted volumes
 
-## Deploy on Vercel
+Planned:
+- docker-compose.yml example
+- backup and restore documentation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Non-Goals
+
+- Being a commercial SaaS
+- Supporting arbitrary third-party customisation
+- Feature parity with tools like Notion, Todoist, or YNAB
+
+This is a personal system, not a platform.
+
+---
+
+## Guiding Principles
+
+- Fewer features, better integrated
+- Explicit over clever
+- Boring, proven tech over novelty
+- Data should outlive the UI
+- The system should feel calm to use
+
+---
+
+## Status
+
+This project is actively evolving.
+
+Expect:
+- schema changes
+- module refactors
+- ongoing UI iteration
+
+Stability follows clarity.
+
+---
+
+## Future Ideas (Non-Exhaustive)
+
+- Cross-module linking
+- Global search
+- Activity timeline
+- Read-only public views
+- Import/export tooling
