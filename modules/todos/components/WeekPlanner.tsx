@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Card, CardContent, CardHeader } from "@/ui/card";
 import { getWeekDays, WeekRange } from "@/lib/date";
 import { Todo } from "@/lib/db/types/todos";
 import WeekNav from "./WeekNav";
@@ -18,7 +18,6 @@ export async function WeekPlanner({
     <Card>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Weekly Plan</CardTitle>
           <WeekNav week={week} />
         </div>
       </CardHeader>

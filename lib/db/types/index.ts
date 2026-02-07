@@ -77,6 +77,21 @@ export interface DashboardData {
       nextDueDate: string;
     }>;
   };
+  todos: {
+    focus: {
+      attentionItems: Array<{
+        id: string;
+        title: string;
+        status: "overdue" | "unscheduled";
+        daysOverdue?: number;
+      }>;
+      todayItems: Array<{
+        id: string;
+        title: string;
+        status: "today";
+      }>;
+    };
+  };
 }
 
 export interface Database {

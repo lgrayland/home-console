@@ -1,9 +1,8 @@
 import { getDashboardData } from "@/lib/db/dashboard/queries";
 import { FinancePulse } from "@/modules/dashboard/components/FinancePulse";
 import { InboxSection } from "@/modules/dashboard/components/InboxSection";
+import { TodoFocus } from "@/modules/dashboard/components/TodoFocus";
 import { UpcomingSection } from "@/modules/dashboard/components/UpcomingSection";
-
-export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const data = await getDashboardData();
@@ -28,6 +27,10 @@ export default async function HomePage() {
         </div>
 
         <div className="space-y-6">
+          <TodoFocus
+            attentionItems={data.todos.focus.attentionItems}
+            todayItems={data.todos.focus.todayItems}
+          />
           <FinancePulse recurringTotals={data.finance.recurringTotals} />
         </div>
       </div>

@@ -77,7 +77,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       "cf.due_day",
       "a.name as account_name",
     ])
-    .select((eb) =>
+    .select(() =>
       sql<string>`
         (
           CASE
@@ -99,6 +99,62 @@ export async function getDashboardData(): Promise<DashboardData> {
     .orderBy(sql`next_due_date`, "asc")
     .limit(8)
     .execute();
+
+  // 6) Todos: Focus widget data (server-date-safe via current_date)
+  // Overdue (open + due_date < current_date)
+  const overdueRows = await db
+    .selectFrom("todos")
+    .select(["id", "title", "due_date"])
+    .select((eb) =>
+      sql<number>`(current_date - ${eb.ref("due_date")})`.as("days_overdue"),
+    )
+    .where("status", "=", "open")
+    .where("due_date", "is not", null)
+    .where(sql<boolean>`due_date < current_date`)
+    .orderBy("due_date", "asc")
+    .limit(3)
+    .execute();
+
+  // Unscheduled (open + due_date is null)
+  const unscheduledRows = await db
+    .selectFrom("todos")
+    .select(["id", "title"])
+    .where("status", "=", "open")
+    .where("due_date", "is", null)
+    .orderBy("created_at", "desc")
+    .limit(3)
+    .execute();
+
+  // Today (open + due_date = current_date)
+  const todayRows = await db
+    .selectFrom("todos")
+    .select(["id", "title"])
+    .where("status", "=", "open")
+    .where(sql<boolean>`due_date = current_date`)
+    .orderBy("created_at", "asc")
+    .limit(5)
+    .execute();
+
+  // Merge + shape for widget
+  const attentionItems = [
+    ...overdueRows.map((t) => ({
+      id: String(t.id),
+      title: String(t.title),
+      status: "overdue" as const,
+      daysOverdue: Number((t as { days_overdue?: number }).days_overdue ?? 0),
+    })),
+    ...unscheduledRows.map((t) => ({
+      id: String(t.id),
+      title: String(t.title),
+      status: "unscheduled" as const,
+    })),
+  ];
+
+  const todayItems = todayRows.map((t) => ({
+    id: String(t.id),
+    title: String(t.title),
+    status: "today" as const,
+  }));
 
   return {
     inbox: {
@@ -122,6 +178,12 @@ export async function getDashboardData(): Promise<DashboardData> {
         accountName: r.account_name ? String(r.account_name) : null,
         nextDueDate: new Date(r.next_due_date).toISOString().slice(0, 10),
       })),
+    },
+    todos: {
+      focus: {
+        attentionItems,
+        todayItems,
+      },
     },
   };
 }

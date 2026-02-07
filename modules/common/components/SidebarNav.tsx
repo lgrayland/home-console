@@ -21,9 +21,9 @@ import {
 import HomeConsole from "./HomeConsole";
 
 const navItems = [
-  { name: "Finance", href: "/finance", icon: Banknote },
-  { name: "Todos", href: "/todos", icon: CheckSquare },
   { name: "Thoughts", href: "/thoughts", icon: Lightbulb },
+  { name: "Todos", href: "/todos", icon: CheckSquare },
+  { name: "Finance", href: "/finance", icon: Banknote },
   { name: "Notes", href: "/notes", icon: FileText },
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "System", href: "/system", icon: Server },
